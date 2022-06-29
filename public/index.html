@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+
+        <!-- log in -->
+        <div v-if="page == 'login'">
+            <h1>Log In</h1>
+            <input placeholder="Email/username" v-model="loginName">
+            <input placeholder="Password" v-model="loginPassword" type="password">
+            <button @click="login()">Log in</button>
+        </div>
+
+        <!-- create user -->
+        <div v-if="page == 'createUser'">
+            <h1>Create New User</h1>
+            <input placeholder="Email" v-model="signupEmail">
+            <input placeholder="Username" v-model="signupName">
+            <input placeholder="Password" v-model="signupPassword">
+            <button @click="createUser()">Create User</button>
+
+        </div>
+        <!-- home page -->
+        <div v-if="page=='homePage'">
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
