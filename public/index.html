@@ -15,6 +15,7 @@
             <input placeholder="Email/username" v-model="loginName">
             <input placeholder="Password" v-model="loginPassword" type="password">
             <button @click="login()">Log in</button>
+            <div @click="page='createUser'">Don't have an account? Create new User.</div>
         </div>
 
         <!-- create user -->
@@ -28,6 +29,30 @@
         </div>
         <!-- home page -->
         <div v-if="page=='homePage'">
+            <h1>This is a home page.</h1>
+            <div v-for="(item, index) in threads">
+                <div @click="openThread(item)">
+                    <h3>{{item.name}}</h2>
+                    <h4>{{item.category}}</h4>
+                    <p>{{item.description}}</p>
+
+                </div>
+                <br>
+            </div>
+        </div>
+
+        <!-- thread page -->
+        <div v-if="page=='thread'">
+
+            <h1>{{currentThread.name}}</h1>
+            <h4>{{currentThread.category}}</h4>
+            <h6>{{currentThread.createdAt}}</h6>
+            <div v-for="post in currentThread.posts">
+                <!-- {{post}} -->
+                <div>{{post.body}}</div>
+                <div>{{post.user.username}}</div>
+                
+            </div>
 
         </div>
 

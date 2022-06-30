@@ -8,14 +8,22 @@ let app = new Vue({
         signupName:"",
         signupPassword:"",
         page:"login",
+        threads:[],
+        currentThread:{},
     },
     methods:{
         login:function(){
             this.postSession();
+            this.page = 'homePage';
             
         },
         createUser:function(){
             this.postUser();
+        },
+        openThread: function(thread){
+            this.getThreadByID(thread._id);
+            this.page = "thread";
+            // this.currentThread = thread;
         },
         getSession: async function(){
             let response = await fetch(`${URL}/session`, {
@@ -29,6 +37,7 @@ let app = new Vue({
                 let data = await response.json();
                 console.log(data);
                 this.loggedIn = true;
+                this.page = 'homePage';
 
             } else if(response.status == 401){
                 console.log("not logged in");
@@ -105,7 +114,39 @@ let app = new Vue({
             if(response.status == 201){
                 console.log("User successfully created");
             }// else if () {}
-        }
+        },
+
+        //get threads
+        getThreads: async function(){
+            let response = await fetch(`${URL}/thread`,{
+                credentials:"include"
+            });
+            let data = await response.json()
+            // console.log(data);
+            this.threads = data;
+            console.log(data)
+        },
+        //get the posts(comments) on a thread
+        getThreadByID: async function(id){
+            let response = await fetch(`${URL}/thread/${id}`, {
+                credentials:"include"
+            });
+            let data = await response.json();
+            this.currentThread = data;
+            console.log(this.currentThread);
+        },
+        test: function(){
+            console.log("test success");
+        },
+
+        //create new thread
+
+        //add a comment/post
+
+        //delete thread
+
+        //delete post
+
 
     },
     // computed:{
@@ -116,6 +157,10 @@ let app = new Vue({
     //     },
     // },
     created: function(){
-        this.getSession()
+
+        document.addEventListener("backbutton",this.test(), false);
+
+        this.getSession();
+        this.getThreads();
     }
 });
