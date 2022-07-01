@@ -29,6 +29,14 @@
         </div>
         <!-- home page -->
         <div v-if="page=='homePage'">
+            <button @click="page = 'login'">Logout</button>
+            <button @click="creatingThread = true">CreateThread</button>
+            <div v-if="creatingThread">
+                <input v-model="createThreadName" placeholder="Name of the new thread"> <!-- name of the thread -->
+                <input v-model="createThreadCategory" placeholder="Category of the new thread"> <!-- category of the thread -->
+                <input v-model="createThreadDescription" placeholder="Description of the new thread" > <!-- description of the thread -->
+                <button @click="postThread()" >Submit</button>
+            </div>
             <h1>This is a home page.</h1>
             <div v-for="(item, index) in threads">
                 <div @click="openThread(item)">
@@ -44,6 +52,12 @@
         <!-- thread page -->
         <div v-if="page=='thread'">
 
+            <button @click="creatingPost=true">Create new post</button>
+            <button @click="deleteThread(currentThread)">Delete this thread</button>
+            <div v-if="creatingPost">   
+                <input v-model="createPostBody" placeholder="Text">
+                <button @click="postPost(currentThread)">Submit</button>
+            </div>
             <h1>{{currentThread.name}}</h1>
             <h4>{{currentThread.category}}</h4>
             <h6>{{currentThread.createdAt}}</h6>

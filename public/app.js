@@ -10,6 +10,12 @@ let app = new Vue({
         page:"login",
         threads:[],
         currentThread:{},
+        createThreadName:"",
+        createThreadCategory:"",
+        createThreadDescription:"",
+        creatingThread:false,
+        creatingPost:false,
+        createPostBody:"",
     },
     methods:{
         login:function(){
@@ -133,19 +139,69 @@ let app = new Vue({
             });
             let data = await response.json();
             this.currentThread = data;
-            console.log(this.currentThread);
+            // console.log(this.currentThread);
         },
-        test: function(){
-            console.log("test success");
-        },
+        
 
         //create new thread
+        postThread: async function(){
+            let thread = {
+                "name":this.createThreadName,
+                "category":this.createThreadCategory,
+                "description":this.createThreadDescription,
+                "author":this.loginName
+            }
+            
+            let response = await fetch(`${URL}/thread`,{
+                method:"POST",
+                credentials:"include",
+                body:JSON.stringify(thread),
+                headers:{"Content-Type":"application/json"}
+            });
+            let body = await response.json();
+            console.log(body);
+            this.getThreads();
+        },
 
         //add a comment/post
+        postPost: async function(thread){
+            let body = {
+                "thread_id":thread._id,
+                "body":this.createPostBody
+            }
+            // console.log(body);
 
+            let response = await fetch(`${URL}/post`,{
+                method:"POST",
+                credentials:"include",
+                body: JSON.stringify(body),
+                headers:{"Content-Type":"application/json"}
+            });
+            let responseBody =await response.json();
+            console.log(responseBody);
+            this.getThreadByID(thread._id);
+            this.createPostBody = "";
+        },
         //delete thread
 
+        deleteThread: async function(thread){
+            let response = await fetch(`${URL}/thread/${thread._id}`,{
+                method:"DELETE",
+                credentials:"include",
+                headers:{"Content-Type":"application/json"}
+            });
+            let body = await response.json();
+
+            console.log(body);
+            this.getThreads();
+            this.page = 'homePage';
+        },
+
         //delete post
+        deletePost: async function(post){
+            //finish this
+            console.log("test");
+        },
 
 
     },
@@ -158,7 +214,7 @@ let app = new Vue({
     // },
     created: function(){
 
-        document.addEventListener("backbutton",this.test(), false);
+        // document.addEventListener("backbutton",this.test(), false);
 
         this.getSession();
         this.getThreads();
