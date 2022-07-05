@@ -1,4 +1,5 @@
-const URL = "https://forum2022.codeschool.cloud"
+// const URL = "https://forum2022.codeschool.cloud"
+const URL = "http://localhost:8080"
 let app = new Vue({
     el:'#app',
     data:{
@@ -107,7 +108,7 @@ let app = new Vue({
                 fullname:this.signupName,
                 password:this.signupPassword
             }
-            let response = await fetch(`${URL}/user`,{
+            let response = await fetch(`${URL}/users`,{
                 method:"POST",
                 body:JSON.stringify(userBody),
                 headers:{"Content-Type":"application/json"},

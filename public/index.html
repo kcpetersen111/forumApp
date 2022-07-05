@@ -5,21 +5,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="./style.css" rel="stylesheet">
 </head>
 <body>
-    <div id="app">
+    <div id="app" v-cloak>
 
         <!-- log in -->
-        <div v-if="page == 'login'">
-            <h1>Log In</h1>
-            <input placeholder="Email/username" v-model="loginName">
-            <input placeholder="Password" v-model="loginPassword" type="password">
-            <button @click="login()">Log in</button>
-            <div @click="page='createUser'">Don't have an account? Create new User.</div>
+        <div v-if="page == 'login'" id="loginpage" >
+            <div>
+                <h1>Log In</h1>
+                <input placeholder="Email/username" v-model="loginName">
+                <input placeholder="Password" v-model="loginPassword" type="password">
+                <button @click="login()">Log in</button>
+            </div>
+            <div @click="page='createUser'" class="link">Don't have an account? Create new User.</div>
         </div>
 
         <!-- create user -->
-        <div v-if="page == 'createUser'">
+        <div v-if="page == 'createUser'" id="createpage">
             <h1>Create New User</h1>
             <input placeholder="Email" v-model="signupEmail">
             <input placeholder="Username" v-model="signupName">
@@ -28,20 +31,22 @@
 
         </div>
         <!-- home page -->
-        <div v-if="page=='homePage'">
+        <div v-if="page=='homePage'" id="homepage">
             <button @click="page = 'login'">Logout</button>
             <button @click="creatingThread = true">CreateThread</button>
+
             <div v-if="creatingThread">
                 <input v-model="createThreadName" placeholder="Name of the new thread"> <!-- name of the thread -->
                 <input v-model="createThreadCategory" placeholder="Category of the new thread"> <!-- category of the thread -->
                 <input v-model="createThreadDescription" placeholder="Description of the new thread" > <!-- description of the thread -->
                 <button @click="postThread()" >Submit</button>
             </div>
-            <h1>This is a home page.</h1>
-            <div v-for="(item, index) in threads">
-                <div @click="openThread(item)">
-                    <h3>{{item.name}}</h2>
-                    <h4>{{item.category}}</h4>
+
+            <h1>This is the home page.</h1>
+            <div v-for="(item, index) in threads" class="centered">
+                <div @click="openThread(item)" class="thread">
+                    <div class="itemcategory">{{item.category}}</div>
+                    <div class="itemname">{{item.name}}</div>
                     <p>{{item.description}}</p>
 
                 </div>
