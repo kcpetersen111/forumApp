@@ -1,5 +1,21 @@
 const mongoose = require("mongoose");
 
+const threadSchema = mongoose.Schema({
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
+    name:{type: String, required:true, default:""},
+    description:{type:String, required: true, default:""},
+    // posts:{type: [postSchema], required: true, default:[]},
+    category: {type:String, requited:true, default:""},
+    },
+    {
+        timestamps: true,
+});
+
+
 const userSchema = mongoose.Schema({
     username:{
         type: String,
@@ -21,7 +37,9 @@ const userSchema = mongoose.Schema({
 });
 
 const User = mongoose.model("User",userSchema);
+const Thread = mongoose.model("Thread",threadSchema);
 
 module.exports = {
     User,
+    Thread,
 }

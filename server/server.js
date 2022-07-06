@@ -3,7 +3,8 @@ const setUpAuth = require("./auth");
 const setUpSession = require("./session");
 
 const app = express();
-const {User} = require("../persist/model");
+const {User, Thread} = require("../persist/model");
+
 const cors = require('cors');
 
 app.use(cors());
@@ -35,7 +36,28 @@ app.post("/users", async (req,res)=>{
 });
 
 //post thread
+app.post("/thread", async (req,res)=>{
+    //can not post without being logged in
+    if (!req.user){
+        res.status(401).json({message: "unauthed"});
+        return;
+    }
 
+    try {
+        let thread = await Thread.create({
+            user_id: req.user.id,
+            name:req.body.name,
+            description: req.body.description,
+            category: req.body.category,
+        });
+        res.status(201).json(thread);
+    } catch (err){
+        res.status(500).json({
+            message: "could not create the thread",
+            error:err,
+        });
+    }
+});
 //get thread
 
 //get thread by id

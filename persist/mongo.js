@@ -12,8 +12,8 @@ function configureHandlers(callback){
         console.log("connection to the database is open");
         callback();
     });
-    db.once("error",()=>{
-        console.log("connecting to the database");
+    db.once("error",(err)=>{
+        console.log("error connecting to the database", err);
     });
 };
 
