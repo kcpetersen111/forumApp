@@ -1,4 +1,4 @@
-var db = connect("mongodb://user:password@localhost:27017/admin");
+var db = connect("mongodb://user:password@10.0.0.3:27017/admin");
 
 db = db.getSiblingDB("cs-forum-2022");
 

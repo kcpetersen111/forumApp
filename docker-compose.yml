@@ -1,0 +1,36 @@
+# version: '3'
+# services:
+#   web:
+#     build: .
+#     ports:
+#       - "8080:8080"
+#     # networks:
+#     #   - test
+
+#   mongo:
+#     image: mongo
+#     ports:
+#       - "27017:27017"
+#     # networks:
+#     #   - test
+
+version: '3'
+networks:
+  test:
+    external: true
+      
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    networks:
+      test:
+        ipv4_address: 10.0.0.2
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      test:
+        ipv4_address: 10.0.0.3
