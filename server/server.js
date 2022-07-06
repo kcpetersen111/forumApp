@@ -203,7 +203,29 @@ app.post("/post", async (req,res)=>{
 
     res.status(201).json(thread.posts[thread.posts.length-1]);
 });
+//delete post
+app.delete("/thread/:thread_id/post/:post_id",(req,res)=>{
+    const thread_id = req.params.thread_id;
+    const post_id = req.params.post_id;
+    
+    //if they are not logged in
+    if(!req.user){
+        res.status(401).json({message:"Unauthorized"});
+        return;
+    }
+    let post;
+    //if they are not allowed to 
+    try {
+        post = Thread.findOne(
+            
+        )
+    } catch (error) {
+        
+    }
+    //do it
 
+
+});
 
 
 // this method is for testing  will get all of the stuff out of the users mongodb
