@@ -122,6 +122,40 @@ app.get("/thread/:id", async (req,res)=>{
 
 //delete thread
 
+app.delete("/thread/:id", async (req,res)=>{
+    const id = req.params.id;
+    //check if anyone is logged in
+    if(!req.user){
+        res.status(401).json({message:"Unauthed"});
+        return;
+    }
+
+    let thread;
+    try {
+        thread = await Thread.findById(id);
+
+    } catch (error) {
+        res.status(500).json({message:err});
+        return;
+    }
+    console.log(req.user);
+
+    //check if the right person is logged in
+    if(thread.user_id != req.user.id){
+        res.status(403).json({message:"Forbidden"});
+        return;
+    }
+
+    let response;
+    try {
+        response = await Thread.findByIdAndDelete(id,{new:true});
+    } catch (error) {
+        res.status(500).json({messsage:"IDK something is wrong"})
+    }
+    console.log(response.name, "was deleted");
+    res.status(200).json(response);
+
+});
 
 //post post
 app.post("/post", async (req,res)=>{
@@ -169,7 +203,6 @@ app.post("/post", async (req,res)=>{
 
     res.status(201).json(thread.posts[thread.posts.length-1]);
 });
-//delete post
 
 
 
