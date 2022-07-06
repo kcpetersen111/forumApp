@@ -83,20 +83,78 @@ app.get("/thread", async (req,res)=>{
     res.status(200).json(list);
 });
 
-//get thread by id
-// app.get("/thread/:id",(req,res)=>{
-//     const id = req.params.id;
-//     try {
-//         let thread = await Thread.findById(id);
-//     } catch (error) {
-        
-//     }
-// });
+// get thread by id
+app.get("/thread/:id", async (req,res)=>{
+    const id = req.params.id;
+    let thread;
+    try {
+        thread = await Thread.findById(id);
+    } catch (error) {
+        console.log("error in getting the post from the db", error);
+        res.status(500).json(error);
+        return;
+    }
+
+    try {
+        thread = thread.toObject()
+        let user = await User.findById(thread.user_id);
+        thread.user = user;
+
+    } catch (error) {
+        console.log("Error in getting the user for a thread by id", error);
+        // res.status(500).json(error);
+        // return;
+    }
+    res.status(200).json(thread);
+
+});
 
 //delete thread
 
 //post post
+app.post("/post", async (req,res)=>{
+    if(!req.user){
+        res.status(401).json({message:"unauthed"});
+        return;
+    };
 
+    let thread;
+    try{
+        thread = await Thread.findByIdAndUpdate(
+            //what is the id
+            req.body.thread_id,
+            //what to update
+            {
+                $push:{
+                    posts:{
+                        user_id: req.user.id,
+                        body: req.body.body,
+                        thread_id:req.body.thread_id,
+                    },
+                },
+            },
+            //options
+            {
+                new: true,
+            }
+        );
+
+        if(!thread){
+            res.status(404).json({
+                message: "thread not found",
+                id: req.body.thread_id
+            });
+            return;
+        };
+    } catch(error){
+        res.status(500).json({
+            messsage: 'failed to insert post',
+            error:error,
+        });
+    }
+
+    res.status(201).json(thread.posts[thread.posts.length-1]);
+});
 //delete post
 
 
