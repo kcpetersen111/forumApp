@@ -105,11 +105,23 @@ app.get("/thread/:id", async (req,res)=>{
         // res.status(500).json(error);
         // return;
     }
+
+    for (let i = 0; i < thread.posts.length; i++) {
+        try {
+            thread.posts[i] = thread.posts[i].toObject();
+            thread.posts[i].user = await User.findById(thread.posts[i].user_id, "-password");
+            // thread.posts[i].ussername = user.username;
+        } catch (error) {
+            console.log("Error when getting a the user of a post on a thread",error)
+        }
+    }
+
     res.status(200).json(thread);
 
 });
 
 //delete thread
+
 
 //post post
 app.post("/post", async (req,res)=>{
@@ -152,6 +164,8 @@ app.post("/post", async (req,res)=>{
             error:error,
         });
     }
+
+    
 
     res.status(201).json(thread.posts[thread.posts.length-1]);
 });
