@@ -60,7 +60,37 @@ app.post("/thread", async (req,res)=>{
 });
 //get thread
 
+app.get("/thread", async (req,res)=>{
+    try {
+        let list = await Thread.find({}, "-posts");       
+    } catch (error) {
+        console.log("error in the get thread", error)
+        res.status(500).json(error);
+        return;
+    }
+
+    for (let i = 0; i < list.length; i++) {
+        try {
+            list[i] = list[i].toObject();
+            let user = await User.findById(list[i].user_id, "-password");
+            list[i].user = user;
+        } catch (error) {
+            console.log("Error when getting a thread",error)
+        }
+    }
+
+    res.status(200).json(list);
+});
+
 //get thread by id
+// app.get("/thread/:id",(req,res)=>{
+//     const id = req.params.id;
+//     try {
+//         let thread = await Thread.findById(id);
+//     } catch (error) {
+        
+//     }
+// });
 
 //delete thread
 
