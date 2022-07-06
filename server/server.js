@@ -61,8 +61,9 @@ app.post("/thread", async (req,res)=>{
 //get thread
 
 app.get("/thread", async (req,res)=>{
+    let list;
     try {
-        let list = await Thread.find({}, "-posts");       
+        list = await Thread.find({}, "-posts");       
     } catch (error) {
         console.log("error in the get thread", error)
         res.status(500).json(error);
