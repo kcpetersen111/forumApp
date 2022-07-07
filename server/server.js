@@ -49,6 +49,8 @@ app.post("/thread", async (req,res)=>{
             name:req.body.name,
             description: req.body.description,
             category: req.body.category,
+            likes: [req.user.id],
+            dislike: []
         });
         res.status(201).json(thread);
     } catch (err){
@@ -106,15 +108,15 @@ app.get("/thread/:id", async (req,res)=>{
         // return;
     }
 
-    for (let i = 0; i < thread.posts.length; i++) {
-        try {
-            thread.posts[i] = thread.posts[i].toObject();
-            thread.posts[i].user = await User.findById(thread.posts[i].user_id, "-password");
-            // thread.posts[i].ussername = user.username;
-        } catch (error) {
-            console.log("Error when getting a the user of a post on a thread",error)
-        }
-    }
+    // for (let i = 0; i < thread.posts.length; i++) {
+    //     try {
+    //         thread.posts[i] = thread.posts[i].toObject();
+    //         thread.posts[i].user = await User.findById(thread.posts[i].user_id, "-password");
+    //         // thread.posts[i].ussername = user.username;
+    //     } catch (error) {
+    //         console.log("Error when getting a the user of a post on a thread",error)
+    //     }
+    // }
 
     res.status(200).json(thread);
 
@@ -204,7 +206,7 @@ app.post("/post", async (req,res)=>{
     res.status(201).json(thread.posts[thread.posts.length-1]);
 });
 //delete post
-app.delete("/thread/:thread_id/post/:post_id",(req,res)=>{
+app.delete("/thread/:thread_id/post/:post_id", async (req,res)=>{
     const thread_id = req.params.thread_id;
     const post_id = req.params.post_id;
     
@@ -213,19 +215,74 @@ app.delete("/thread/:thread_id/post/:post_id",(req,res)=>{
         res.status(401).json({message:"Unauthorized"});
         return;
     }
-    let post;
+    let thread;
     //if they are not allowed to 
     try {
-        post = Thread.findOne(
-            
-        )
+        thread = await Thread.findOne({
+            _id:thread_id,
+            "posts._id": post_id
+        });
     } catch (error) {
-        
+        res.status(500).json({message:"An error has occured when gettting a post",
+            error:error,
+        });
+        return;
     }
-    //do it
 
+    if(!thread){
+        res.status(404).json({message:`Could not find post ${post_id} on thread ${thread_id}`});
+        return;
+    }
+
+    // console.log(thread);
+
+    //now that we have the thread we need to find the post and see if the person trying to delete it is allowed to 
+    let samePerson = false;
+    let finPost;
+    for (let post in thread.posts){
+        // console.log(post)
+        if(thread.posts[post]._id == post_id){
+            finPost = post;
+            // console.log(thread.posts[post], req.user.id);
+            if(thread.posts[post].user_id == req.user.id) {
+                samePerson = true;
+                // console.log("something is fundementally broken")
+            }
+        }
+    }
+
+    if(!samePerson){
+        res.status(403).json({message:"unauthed"});
+        return;
+    }
+    // 62c7057bdc205f59012e7e4a
+    // 62c7057bdc205f59012e7e4a
+    //do it
+    try {
+        await Thread.findByIdAndUpdate(thread_id,{
+            $pull: {
+                posts: {
+                    _id: post_id,
+                },
+            },
+        });
+    } catch (error) {
+        res.status(500).json({message:`An error has occurred while deleting a post ${error}`});
+        return;
+    }
+
+    res.status(200).json(finPost);
 
 });
+
+//add likes to a thread
+// app.post("/thread/:id", async (req,res)=>{
+//     if(!req.user){
+//         res.status(401).json(message:"")
+//     }
+// });
+
+//adds dislikes to the thread
 
 
 // this method is for testing  will get all of the stuff out of the users mongodb
