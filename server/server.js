@@ -276,11 +276,50 @@ app.delete("/thread/:thread_id/post/:post_id", async (req,res)=>{
 });
 
 //add likes to a thread
-// app.post("/thread/:id", async (req,res)=>{
-//     if(!req.user){
-//         res.status(401).json(message:"")
-//     }
-// });
+app.post("/thread/:id/like", async (req,res)=>{
+    const id = req.params.id;
+    if(!req.user){
+            res.status(401).json({message:"Must be logged in to preform this action"})
+    }
+    //need to check if it is not already in there
+    let alreadyLiked = false;
+    try {
+        let temp = await Thread.findById(id);
+        for(let i = 0; i<temp.likes.length;i++){
+            if(temp.likes[i] == req.user._id){alreadyLiked=true;}
+        }
+    } catch (error) {
+        res.status(500).json({message:"An error occurred",error:error});
+    }
+    if(alreadyLiked){
+        res.status(403).json({message:"Already liked"});
+        return;
+    }
+    // need to get the thread and update the list to add the user id
+    let thread;
+    try {
+        console.log(req.user);
+        thread = await Thread.findByIdAndUpdate(id,
+            {
+                $push:{
+                    likes: req.user.id,
+                },
+                
+            },
+            {
+                new:true,
+            }
+        );
+    } catch (error) {
+        res.status(500).json({message:"An error has occured on the serever", error: error});
+        return;
+    }
+    if(!thread){
+        res.status(404).json({message:"Thread not found"});
+        return;
+    }
+    res.status(201).json(thread);
+});
 
 //adds dislikes to the thread
 
