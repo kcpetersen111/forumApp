@@ -285,11 +285,15 @@ app.post("/thread/:id/like", async (req,res)=>{
     let alreadyLiked = false;
     try {
         let temp = await Thread.findById(id);
+        console.log(temp);
         for(let i = 0; i<temp.likes.length;i++){
-            if(temp.likes[i] == req.user._id){alreadyLiked=true;}
+            if(temp.likes[i] == req.user.id){
+                alreadyLiked=true;
+            }
         }
     } catch (error) {
         res.status(500).json({message:"An error occurred",error:error});
+        return;
     }
     if(alreadyLiked){
         res.status(403).json({message:"Already liked"});
@@ -323,6 +327,50 @@ app.post("/thread/:id/like", async (req,res)=>{
 
 //adds dislikes to the thread
 
+app.post("/thread/:id/dislike", async (req,res)=>{
+    const id = req.params.id;
+    if(!req.user){
+            res.status(401).json({message:"Must be logged in to preform this action"})
+    }
+    //need to check if it is not already in there
+    let alreadyDisliked = false;
+    try {
+        let temp = await Thread.findById(id);
+        for(let i = 0; i<temp.likes.length;i++){
+            if(temp.likes[i] == req.user.id){alreadyDisliked=true;}
+        }
+    } catch (error) {
+        res.status(500).json({message:"An error occurred",error:error});
+    }
+    if(alreadyDisliked){
+        res.status(403).json({message:"Already disliked"});
+        return;
+    }
+    // need to get the thread and update the list to add the user id
+    let thread;
+    try {
+        console.log(req.user);
+        thread = await Thread.findByIdAndUpdate(id,
+            {
+                $push:{
+                    dislike: req.user.id,
+                },
+                
+            },
+            {
+                new:true,
+            }
+        );
+    } catch (error) {
+        res.status(500).json({message:"An error has occurred on the server", error: error});
+        return;
+    }
+    if(!thread){
+        res.status(404).json({message:"Thread not found"});
+        return;
+    }
+    res.status(201).json(thread);
+});
 
 // this method is for testing  will get all of the stuff out of the users mongodb
 // app.get("/users", async (req,res)=>{
