@@ -341,6 +341,7 @@ app.post("/thread/:id/dislike", async (req,res)=>{
         }
     } catch (error) {
         res.status(500).json({message:"An error occurred",error:error});
+        return;
     }
     if(alreadyDisliked){
         res.status(403).json({message:"Already disliked"});
